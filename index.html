@@ -11,7 +11,9 @@
 <body>
   <div id="overlay">
     <div class="menu">
+      <h4>Consejo: Utiliza siempre el celular de costado, recarga la página cuando lo hagas.</h4>
       <h2>Modo de juego</h2>
+
       <button onclick="iniciarJuego('bot')">Contra el Bot</button>
       <button onclick="iniciarJuego('2jugadores')">2 Jugadores</button>
     </div>
@@ -47,7 +49,11 @@
   </div>
 
   <!-- Tablero del juego -->
-  <div id="tablero-juego" class="tablero-juego"></div>
+  <div id="contenedor-tablero">
+    <div id="tablero-juego" class="tablero-juego"></div>
+  </div>
+
+
   <div id="overlay-victoria">
     <div class="mensaje-victoria">
       <h2 id="texto-victoria"></h2>
