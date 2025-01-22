@@ -18,8 +18,8 @@ h1 {
 }
 
 .celda {
-  width: 40px;
-  height: 40px;
+  width: 50px;
+  height: 50px;
   background-color: white;
   border: 3px solid #7f7f7f;
   display: flex;
@@ -213,4 +213,156 @@ button:hover {
 
 .mensaje-victoria button:hover {
   background-color: #fbf850;
+}
+
+
+/* Diseño para dispositivos con un ancho máximo de 768px (tablets y móviles) */
+@media (max-width: 768px) {
+  #tablero-juego {
+    gap: 1px;
+  }
+
+  .celda {
+    width: 40px;
+    height: 40px;
+    font-size: 20px;
+  }
+
+  #marcadores {
+    flex-direction: flex;
+    gap: 20px;
+  }
+
+  #jugador-x, #jugador-o {
+    font-size: 16px;
+    width: auto; /* Permite ajustar el ancho automáticamente */
+  }
+
+  .header {
+    padding: 5px;
+  }
+
+  #turno-indicador {
+    font-size: 18px;
+    margin: 5px 0;
+  }
+
+  .mensaje-victoria {
+    width: 90%;
+    padding: 20px;
+  }
+
+  .contenido-turno {
+    width: 90%;
+    padding: 20px;
+  }
+
+  .mensaje-victoria button {
+    width: 100%;
+    margin-bottom: 10px; /* Espaciado entre botones */
+  }
+}
+
+/* Diseño para dispositivos con un ancho máximo de 480px (teléfonos pequeños) */
+@media (max-width: 480px) {
+  #tablero-juego {
+    gap: 0.5px;
+  }
+
+  .celda {
+    width: 25px;
+    height: 25px;
+    font-size: 16px;
+  }
+
+  #jugador-x, #jugador-o {
+    font-size: 14px;
+  }
+
+  h1 {
+    font-size: 20px;
+  }
+
+  .menu h2 {
+    font-size: 16px;
+  }
+
+  .menu button {
+    font-size: 14px;
+    padding: 10px 20px;
+  }
+
+  #turno-indicador {
+    font-size: 16px;
+  }
+
+  .mensaje-victoria h2 {
+    font-size: 16px;
+  }
+
+  .contenido-turno button {
+    font-size: 14px;
+  }
+}
+
+/* Pantallas entre 769px y 1023px (Tablets) */
+@media (min-width: 769px) and (max-width: 1023px) {
+  #tablero-juego {
+    gap: 1px;
+  }
+
+  .celda {
+    width: 30px;
+    height: 30px;
+    font-size: 20px;
+  }
+
+  h1 {
+    font-size: 24px;
+  }
+
+  button {
+    padding: 10px 20px;
+    font-size: 14px;
+  }
+
+  #marcadores {
+    gap: 30px;
+  }
+
+  #jugador-x,
+  #jugador-o {
+    font-size: 16px;
+  }
+}
+
+/* Pantallas entre 1024px y 1300px */
+@media (min-width: 1024px) and (max-width: 1300px) {
+  #tablero-juego {
+    gap: 2px;
+  }
+
+  .celda {
+    width: 50px;
+    height: 50px;
+    font-size: 25px;
+  }
+
+  h1 {
+    font-size: 28px;
+  }
+
+  button {
+    padding: 12px 25px;
+    font-size: 15px;
+  }
+
+  #marcadores {
+    gap: 40px;
+  }
+
+  #jugador-x,
+  #jugador-o {
+    font-size: 17px;
+  }
 }

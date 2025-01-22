@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>5 en Raya</title>
+  <link rel="stylesheet" href="juego.css">
+</head>
+
+<body>
+  <div id="overlay">
+    <div class="menu">
+      <h2>Modo de juego</h2>
+      <button onclick="iniciarJuego('bot')">Contra el Bot</button>
+      <button onclick="iniciarJuego('2jugadores')">2 Jugadores</button>
+    </div>
+  </div>
+
+  <!-- Overlay para el turno inicial -->
+  <div id="overlay-turno">
+    <div class="contenido-turno">
+      <p id="mensaje-turno"></p>
+      <button id="boton-comenzar">Jugar</button>
+    </div>
+  </div>
+
+  <div class="header">
+    <h1>5 en Raya</h1>
+    <!-- Indicador de turno -->
+    <div id="turno-indicador"></div>
+
+    <!-- Marcadores -->
+    <div id="marcadores">
+      <div id="jugador-x">
+        <span id="nombre-x">Jugador X</span>
+        <span id="victorias-x" style="color: green;">V 0</span>
+        <span id="derrotas-x" style="color: red;">D 0</span>
+      </div>
+      <div id="jugador-o">
+        <span id="nombre-o">Jugador O</span>
+        <span id="victorias-o" style="color: green;">V 0</span>
+        <span id="derrotas-o" style="color: red;">D 0</span>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Tablero del juego -->
+  <div id="tablero-juego" class="tablero-juego"></div>
+  <div id="overlay-victoria">
+    <div class="mensaje-victoria">
+      <h2 id="texto-victoria"></h2>
+      <button onclick="reiniciarJuego()">Jugar Nuevamente</button>
+      <button onclick="volverAlMenu()">Volver al Menú</button>
+    </div>
+  </div>
+  
+  
+
+  </div>
+
+
+
+  <!-- Archivo de lógica del juego -->
+  <script src="logica.js"></script>
+</body>
+
+</html>

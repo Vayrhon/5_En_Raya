@@ -1,7 +1,7 @@
 const tablero = document.getElementById('tablero-juego');
 const turnoIndicador = document.getElementById('turno-indicador');
-const columnas = 36;
-const filas = 16;
+let columnas; // Definido dinámicamente
+let filas;    // Definido dinámicamente
 let turnoInicial = 'x'; // Determina quién inicia la partida
 let turno = turnoInicial; // Turno actual
 let celdasGanadoras = [];
@@ -11,8 +11,28 @@ let victoriasX = 0;
 let victoriasO = 0;
 let derrotasX = 0;
 let derrotasO = 0;
-JugadorO = ""
-JugadorX = ""
+let JugadorO = "";
+let JugadorX = "";
+
+// Detectar dispositivo y ajustar el tablero
+function ajustarDimensionesTablero() {
+    const anchoPantalla = window.innerWidth;
+
+    if (anchoPantalla <= 768) { // Dispositivos móviles
+        columnas = 20;
+        filas = 11;
+    } else if (anchoPantalla < 1024) { // Tablets
+        columnas = 27;
+        filas = 13;
+    }else if (anchoPantalla >= 1024 && anchoPantalla <= 1400) { // Tablets
+        columnas = 23;
+        filas = 14;
+    }
+     else { // Computadoras
+        columnas = 33;
+        filas = 14;
+    }
+}
 
 // Función para iniciar el juego
 function iniciarJuego(modo) {
@@ -20,45 +40,47 @@ function iniciarJuego(modo) {
     if (modo === '2jugadores') {
         const nombreJugadorX = prompt("Ingrese el nombre del jugador X:");
         const nombreJugadorO = prompt("Ingrese el nombre del jugador O:");
-        JugadorO = nombreJugadorO;
-        JugadorX = nombreJugadorX;
+        JugadorO = nombreJugadorO || "Jugador O";
+        JugadorX = nombreJugadorX || "Jugador X";
 
-        if (!nombreJugadorX || !nombreJugadorO) {
-            alert("Debes ingresar los nombres de ambos jugadores para continuar.");
-            document.getElementById('overlay').style.display = 'flex';
-            return;
-        }
-
-        document.getElementById('nombre-x').textContent = `${nombreJugadorX}`;
-        document.getElementById('nombre-o').textContent = `${nombreJugadorO}`;
+        document.getElementById('nombre-x').textContent = JugadorX;
+        document.getElementById('nombre-o').textContent = JugadorO;
     } else {
         const nombreJugadorX = prompt("Ingrese el nombre del jugador X:");
-        JugadorX = nombreJugadorX
+        JugadorX = nombreJugadorX || "Jugador X";
         JugadorO = "Bot";
-        if (!nombreJugadorX) {
-            alert("Debes ingresar el nombre del Jugador X");
-            document.getElementById('overlay').style.display = 'flex';
-            return;
-        }
-        document.getElementById('nombre-x').textContent = `${nombreJugadorX}`;
+
+        document.getElementById('nombre-x').textContent = JugadorX;
         document.getElementById('nombre-o').textContent = "Bot";
     }
     document.getElementById('overlay').style.display = 'none';
+    ajustarDimensionesTablero(); // Ajustar dimensiones antes de crear el tablero
     crearTablero();
     actualizarIndicadorTurno();
 }
+
 // Función para actualizar el indicador de turno
 function actualizarIndicadorTurno() {
     if (!juegoTerminado) {
-        const jugadorActual = turno === 'x' ? 'X (' + document.getElementById('nombre-x').textContent + ')' : 'O (' + document.getElementById('nombre-o').textContent + ')';
+        const jugadorActual = turno === 'x' ? `X (${JugadorX})` : `O (${JugadorO})`;
         turnoIndicador.textContent = `Turno del jugador: ${jugadorActual}`;
     }
 }
 
 // Función para crear el tablero
 function crearTablero() {
-    tablero.style.gridTemplateColumns = `repeat(${columnas}, 40px)`;
-    tablero.style.gridTemplateRows = `repeat(${filas}, 40px)`;
+
+    let tamañoCelda;
+    if (window.innerWidth < 1024) {
+        tamañoCelda = 30; // Tamaño para pantallas pequeñas
+    } else if (window.innerWidth < 1100) {
+        tamañoCelda = 40; // Tamaño para pantallas medianas
+    } else {
+        tamañoCelda = 40; // Tamaño para pantallas grandes
+    }
+
+    tablero.style.gridTemplateColumns = `repeat(${columnas}, ${tamañoCelda}px)`;
+    tablero.style.gridTemplateRows = `repeat(${filas}, ${tamañoCelda}px)`;
     tablero.innerHTML = ''; // Limpiar tablero antes de crear
 
     for (let i = 0; i < filas; i++) {
@@ -77,7 +99,6 @@ function crearTablero() {
 }
 
 function manejarClick(celda) {
-    // Si el juego ha terminado, la celda ya está ocupada, o es el turno del bot, no hacer nada
     if (juegoTerminado || celda.classList.contains('x') || celda.classList.contains('o') || (modoJuego === 'bot' && turno === 'o')) {
         return;
     }
@@ -87,10 +108,10 @@ function manejarClick(celda) {
 
     if (comprobarVictoria()) {
         dibujarLineaGanadora();
-    
+
         const overlayVictoria = document.getElementById("overlay-victoria");
         const textoVictoria = document.getElementById("texto-victoria");
-    
+
         if (turno === 'x') {
             textoVictoria.textContent = `¡Felicidades ${JugadorX} (X), has ganado!`;
             victoriasX++;
@@ -100,17 +121,13 @@ function manejarClick(celda) {
             victoriasO++;
             derrotasX++;
         }
-    
+
         actualizarMarcadores();
         juegoTerminado = true;
-    
-        // Mostrar el overlay con el mensaje
+
         overlayVictoria.style.display = "flex";
         return;
     }
-    
-    
-    
 
     turno = turno === 'x' ? 'o' : 'x';
     actualizarIndicadorTurno();
@@ -119,6 +136,7 @@ function manejarClick(celda) {
         setTimeout(movimientoBot, 500);
     }
 }
+
 // Funciones auxiliares
 function actualizarMarcadores() {
     document.getElementById('victorias-x').textContent = `V ${victoriasX}`;
@@ -223,7 +241,7 @@ function movimientoBot() {
     if (celdaElegida) {
         celdaElegida.classList.add(turno);
         celdaElegida.textContent = turno.toUpperCase();
-        
+
         if (comprobarVictoria()) {
             dibujarLineaGanadora();
             const overlayVictoria = document.getElementById("overlay-victoria");
@@ -663,7 +681,7 @@ function reiniciarJuego() {
     // Mostrar el overlay del turno inicial
     const overlay = document.getElementById('overlay-turno');
     const mensajeTurno = document.getElementById('mensaje-turno');
-    const jugadorInicial = turnoInicial === 'x' 
+    const jugadorInicial = turnoInicial === 'x'
         ? `(${document.getElementById('nombre-x').textContent}) X`
         : `(${document.getElementById('nombre-o').textContent}) O`;
     mensajeTurno.textContent = `¡Parte ${jugadorInicial}!`;
@@ -709,6 +727,13 @@ function volverAlMenu() {
     actualizarIndicadorTurno(); // Actualiza el indicador de turno
 }
 
+// Detectar cambio de tamaño de ventana
+window.addEventListener("resize", () => {
+    ajustarDimensionesTablero();
+    crearTablero();
+});
 
+// Inicializar el tablero
+ajustarDimensionesTablero();
 
 crearTablero();
