@@ -33,21 +33,21 @@ function ajustarDimensionesTablero() {
     const anchoPantalla = window.innerWidth;
 
     if  (anchoPantalla <= 480) { // Dispositivos móviles
-        columnas = 9;
+        columnas = 1;
         filas = 9;
     } else if  (anchoPantalla <= 768) { // Dispositivos móviles
-        columnas = 15;
+        columnas = 2;
         filas = 9;
     }
     else if (anchoPantalla < 1024) { // Tablets
-        columnas = 20;
+        columnas = 3;
         filas = 13;
     } else if (anchoPantalla >= 1024 && anchoPantalla < 1300) { // Tablets
-        columnas = 23;
+        columnas = 4;
         filas = 14;
     }
     else { // Computadoras
-        columnas = 30;
+        columnas = 5;
         filas = 14;
     }
 }
