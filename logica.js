@@ -24,7 +24,7 @@ function ajustarDimensionesTablero() {
     } else if (anchoPantalla < 1024) { // Tablets
         columnas = 27;
         filas = 13;
-    }else if (anchoPantalla >= 1024 && anchoPantalla <= 1400) { // Tablets
+    }else if (anchoPantalla >= 1024 && anchoPantalla <= 1200) { // Tablets
         columnas = 23;
         filas = 14;
     }
