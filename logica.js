@@ -14,39 +14,43 @@ let derrotasO = 0;
 let JugadorO = "";
 let JugadorX = "";
 
-function inicializarTablero() {
-    crearTablero();
-    turno = turnoInicial;
-    actualizarIndicadorTurno();
-    document.getElementById('overlay').style.display = 'flex'; // Mostrar menú
-}
+
+let estadoTablero = []; // Almacena el estado del tablero
 
 // Inicializar el tablero al cargar la página
 document.addEventListener('DOMContentLoaded', () => {
+    ajustarDimensionesTablero();
     inicializarTablero();
 });
+
+function inicializarTablero() {
+    estadoTablero = Array.from({ length: filas }, () => Array(columnas).fill(null));
+    crearTablero();
+}
 
 // Detectar dispositivo y ajustar el tablero
 function ajustarDimensionesTablero() {
     const anchoPantalla = window.innerWidth;
 
-    if (anchoPantalla <= 768) { // Dispositivos móviles
+    if  (anchoPantalla <= 480) { // Dispositivos móviles
+        columnas = 9;
+        filas = 9;
+    } else if  (anchoPantalla <= 768) { // Dispositivos móviles
+        columnas = 15;
+        filas = 9;
+    }
+    else if (anchoPantalla < 1024) { // Tablets
         columnas = 20;
-        filas = 11;
-    } else if (anchoPantalla < 1024) { // Tablets
-        columnas = 25;
         filas = 13;
-    } else if (anchoPantalla >= 1024 && anchoPantalla <= 1300) { // Tablets
+    } else if (anchoPantalla >= 1024 && anchoPantalla < 1300) { // Tablets
         columnas = 23;
         filas = 14;
     }
     else { // Computadoras
-        columnas = 33;
+        columnas = 30;
         filas = 14;
     }
 }
-
-
 
 // Función para iniciar el juego
 function iniciarJuego(modo) {
@@ -81,7 +85,7 @@ function iniciarJuego(modo) {
     document.getElementById('overlay').style.display = 'none';
 
     // Inicializar el estado del tablero antes de crear
-    inicializarEstadoTablero();
+    inicializarTablero();
     crearTablero();
     actualizarIndicadorTurno();
 }
@@ -96,21 +100,15 @@ function actualizarIndicadorTurno() {
 }
 
 function crearTablero() {
-
-    estadoTablero = Array.from({ length: filas }, () => Array(columnas).fill(null));
-    
-    let tamañoCelda;
-    if (window.innerWidth < 1024) {
-        tamañoCelda = 30; // Tamaño para pantallas pequeñas
-    } else if (window.innerWidth < 1100) {
-        tamañoCelda = 40; // Tamaño para pantallas medianas
-    } else {
-        tamañoCelda = 40; // Tamaño para pantallas grandes
+    if (!estadoTablero || filas === undefined || columnas === undefined) {
+        console.error("Error: estadoTablero, filas o columnas no están definidos.");
+        return;
     }
 
+    let tamañoCelda = 40;
     tablero.style.gridTemplateColumns = `repeat(${columnas}, ${tamañoCelda}px)`;
     tablero.style.gridTemplateRows = `repeat(${filas}, ${tamañoCelda}px)`;
-    tablero.innerHTML = ''; // Limpiar tablero antes de crear
+    tablero.innerHTML = '';
 
     for (let i = 0; i < filas; i++) {
         for (let j = 0; j < columnas; j++) {
@@ -119,16 +117,13 @@ function crearTablero() {
             celda.dataset.fila = i;
             celda.dataset.columna = j;
 
-            // Restaurar el estado del tablero
-            if (estadoTablero[i][j] === 'x') {
-                celda.classList.add('x');
-                celda.textContent = 'X';
-            } else if (estadoTablero[i][j] === 'o') {
-                celda.classList.add('o');
-                celda.textContent = 'O';
+            // Restaurar el estado desde estadoTablero
+            if (estadoTablero[i][j]) {
+                celda.classList.add(estadoTablero[i][j]);
+                celda.textContent = estadoTablero[i][j].toUpperCase();
             }
 
-            celda.addEventListener('click', () => manejarClick(celda));
+            celda.addEventListener('click', () => manejarClick(celda, i, j));
             tablero.appendChild(celda);
         }
     }
@@ -137,92 +132,13 @@ function crearTablero() {
     actualizarIndicadorTurno();
 }
 
-
-// Función para crear el tablero
-// function crearTablero() {
-
-//     let tamañoCelda;
-//     if (window.innerWidth < 1024) {
-//         tamañoCelda = 30; // Tamaño para pantallas pequeñas
-//     } else if (window.innerWidth < 1100) {
-//         tamañoCelda = 40; // Tamaño para pantallas medianas
-//     } else {
-//         tamañoCelda = 40; // Tamaño para pantallas grandes
-//     }
-
-//     tablero.style.gridTemplateColumns = `repeat(${columnas}, ${tamañoCelda}px)`;
-//     tablero.style.gridTemplateRows = `repeat(${filas}, ${tamañoCelda}px)`;
-//     tablero.innerHTML = ''; // Limpiar tablero antes de crear
-
-//     for (let i = 0; i < filas; i++) {
-//         for (let j = 0; j < columnas; j++) {
-//             const celda = document.createElement('div');
-//             celda.classList.add('celda');
-//             celda.dataset.fila = i;
-//             celda.dataset.columna = j;
-//             celda.addEventListener('click', () => manejarClick(celda));
-//             tablero.appendChild(celda);
-//         }
-//     }
-
-//     mostrarBotonReiniciar();
-//     actualizarIndicadorTurno(); // Actualizar turno después de crear
-// }
-
-// function manejarClick(celda) {
-//     if (juegoTerminado || celda.classList.contains('x') || celda.classList.contains('o') || (modoJuego === 'bot' && turno === 'o')) {
-//         return;
-//     }
-
-//     celda.classList.add(turno);
-//     celda.textContent = turno.toUpperCase();
-
-//     if (comprobarVictoria()) {
-//         dibujarLineaGanadora();
-
-//         const overlayVictoria = document.getElementById("overlay-victoria");
-//         const textoVictoria = document.getElementById("texto-victoria");
-
-//         if (turno === 'x') {
-//             textoVictoria.textContent = `¡Felicidades ${JugadorX} (X), has ganado!`;
-//             victoriasX++;
-//             derrotasO++;
-//         } else {
-//             textoVictoria.textContent = `¡Felicidades ${JugadorO} (O), has ganado!`;
-//             victoriasO++;
-//             derrotasX++;
-//         }
-
-//         actualizarMarcadores();
-//         juegoTerminado = true;
-
-//         overlayVictoria.style.display = "flex";
-//         return;
-//     }
-
-//     turno = turno === 'x' ? 'o' : 'x';
-//     actualizarIndicadorTurno();
-
-//     if (modoJuego === 'bot' && turno === 'o' && !juegoTerminado) {
-//         setTimeout(movimientoBot, 500);
-//     }
-// }
-
-
-
 function manejarClick(celda) {
     if (juegoTerminado || celda.classList.contains('x') || celda.classList.contains('o') || (modoJuego === 'bot' && turno === 'o')) {
         return;
     }
 
-    const fila = parseInt(celda.dataset.fila);
-    const columna = parseInt(celda.dataset.columna);
-
     celda.classList.add(turno);
     celda.textContent = turno.toUpperCase();
-
-    // Actualizar el estado del tablero
-    estadoTablero[fila][columna] = turno;
 
     if (comprobarVictoria()) {
         dibujarLineaGanadora();
@@ -255,17 +171,13 @@ function manejarClick(celda) {
     }
 }
 
-
-// Funciones auxiliares
 function actualizarMarcadores() {
     document.getElementById('victorias-x').textContent = `V ${victoriasX}`;
     document.getElementById('derrotas-x').textContent = `D ${derrotasX}`;
     document.getElementById('victorias-o').textContent = `V ${victoriasO}`;
     document.getElementById('derrotas-o').textContent = `D ${derrotasO}`;
 }
-// Función para manejar el turno del bot
 let jugadasBot = 0;
-
 
 function movimientoBot() {
     if (juegoTerminado) return;
@@ -358,8 +270,12 @@ function movimientoBot() {
 
     // Realizar el movimiento
     if (celdaElegida) {
+        const fila = parseInt(celdaElegida.dataset.fila);
+        const columna = parseInt(celdaElegida.dataset.columna);
+
         celdaElegida.classList.add(turno);
         celdaElegida.textContent = turno.toUpperCase();
+        estadoTablero[fila][columna] = turno; // Registrar el movimiento en estadoTablero
 
         if (comprobarVictoria()) {
             dibujarLineaGanadora();
@@ -381,7 +297,6 @@ function movimientoBot() {
         turno = turno === 'x' ? 'o' : 'x';
         actualizarIndicadorTurno();
         jugadasBot++; // Incrementar el contador de jugadas del bot
-        console.log(jugadasBot)
     }
 }
 
@@ -391,6 +306,9 @@ function analizarYActuar() {
 
     // 1. Priorizar ganar inmediatamente
     celdaElegida = detectarLineasCriticas('o', 5, true);
+    if (celdaElegida) return celdaElegida;
+
+    celdaElegida = detectarLineasCriticas('o', 5, false);
     if (celdaElegida) return celdaElegida;
 
     celdaElegida = detectarLineasCriticas('o', 5);
@@ -460,6 +378,7 @@ function analizarYActuar() {
 
     return null; // Ninguna acción encontrada
 }
+
 function buscarCercanoEstrategico() {
     const celdasBot = Array.from(document.querySelectorAll('.celda')).filter(
         celda => celda.classList.contains('o')
@@ -501,6 +420,7 @@ function buscarCercanoEstrategico() {
     // Retornar la mejor opción encontrada o null si no hay
     return celdaEstrategica;
 }
+
 // Nueva función para buscar celdas cerca del oponente
 function buscarCercaOponente() {
     const celdasOponente = Array.from(document.querySelectorAll('.celda')).filter(
@@ -549,6 +469,7 @@ function buscarCercaOponente() {
 
     return null;
 }
+
 // Nueva función para evaluar el potencial de una posición
 function evaluarPosicionPotencial(fila, columna) {
     const direcciones = [
@@ -583,6 +504,7 @@ function evaluarPosicionPotencial(fila, columna) {
 
     return false;
 }
+
 function detectarLineasCriticas(simbolo, cantidad, analizarDosExtremos = false) {
     for (let fila = 0; fila < filas; fila++) {
         for (let columna = 0; columna < columnas; columna++) {
@@ -608,6 +530,7 @@ function detectarLineasCriticas(simbolo, cantidad, analizarDosExtremos = false) 
     }
     return null; // No se encontraron líneas críticas
 }
+
 // Función auxiliar para contar espacios libres alrededor de una celda
 function contarEspaciosLibres(fila, columna, simbolo) {
     const direcciones = [
@@ -645,6 +568,7 @@ function contarEspaciosLibres(fila, columna, simbolo) {
 
     return espaciosLibres;
 }
+
 // Función para verificar líneas críticas con espacio en ambos lados
 function verificarEspacio(fila, columna, direccionFila, direccionColumna, simbolo, cantidad, analizarDosExtremos = false) {
     let contador = 0;
@@ -688,7 +612,7 @@ function verificarEspacio(fila, columna, direccionFila, direccionColumna, simbol
         return contador === cantidad && extremosLibres >= 1;
     }
 }
-// Función para buscar una celda vacía cercana a las marcas del bot
+
 // Función para comprobar la victoria
 function comprobarVictoria() {
     celdasGanadoras = [];
@@ -711,6 +635,7 @@ function comprobarVictoria() {
     }
     return false;
 }
+
 // Función para verificar 5 celdas consecutivas
 function verificarLinea(fila, columna, direccionFila, direccionColumna, celda) {
     let contador = 1;
@@ -778,6 +703,7 @@ function mostrarBotonReiniciar() {
         document.body.appendChild(botonReiniciar);
     }
 }
+
 // Función para reiniciar el juego
 function reiniciarJuego() {
     const celdas = document.querySelectorAll('.celda');
@@ -801,7 +727,7 @@ function reiniciarJuego() {
     const overlay = document.getElementById('overlay-turno');
     const mensajeTurno = document.getElementById('mensaje-turno');
     const jugadorInicial = turnoInicial === 'x'
-        ? `(${document.getElementById('nombre-x').textContent}) X`
+        ?  `(${document.getElementById('nombre-x').textContent}) X`
         : `(${document.getElementById('nombre-o').textContent}) O`;
     mensajeTurno.textContent = `¡Parte ${jugadorInicial}!`;
     overlay.style.display = 'flex';
@@ -846,10 +772,9 @@ function volverAlMenu() {
     actualizarIndicadorTurno(); // Actualiza el indicador de turno
 }
 
-// Detectar cambio de tamaño de ventana
-window.addEventListener("resize", () => {
-    ajustarDimensionesTablero();
-    crearTablero();
+// Inicializar el tablero al cargar la página
+document.addEventListener('DOMContentLoaded', () => {
+    inicializarTablero();
 });
 
 // Inicializar el tablero
