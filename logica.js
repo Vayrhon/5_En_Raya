@@ -14,30 +14,39 @@ let derrotasO = 0;
 let JugadorO = "";
 let JugadorX = "";
 
+function inicializarTablero() {
+    crearTablero();
+    turno = turnoInicial;
+    actualizarIndicadorTurno();
+    document.getElementById('overlay').style.display = 'flex'; // Mostrar menú
+}
+
+// Inicializar el tablero al cargar la página
+document.addEventListener('DOMContentLoaded', () => {
+    inicializarTablero();
+});
+
 // Detectar dispositivo y ajustar el tablero
 function ajustarDimensionesTablero() {
     const anchoPantalla = window.innerWidth;
 
     if (anchoPantalla <= 768) { // Dispositivos móviles
         columnas = 20;
-        filas = 10;
-    } else if (anchoPantalla > 768 && anchoPantalla < 900) { // Tablets
-        columnas = 22;
-        filas = 10;
-    }
-    else if (anchoPantalla >= 900 && anchoPantalla < 1024) { // Tablets
+        filas = 11;
+    } else if (anchoPantalla < 1024) { // Tablets
         columnas = 25;
         filas = 13;
-        
-    }else if (anchoPantalla >= 1024 && anchoPantalla <= 1200) { // Tablets
-        columnas = 27;
+    } else if (anchoPantalla >= 1024 && anchoPantalla <= 1300) { // Tablets
+        columnas = 23;
         filas = 14;
     }
-     else { // Computadoras
+    else { // Computadoras
         columnas = 33;
         filas = 14;
     }
 }
+
+
 
 // Función para iniciar el juego
 function iniciarJuego(modo) {
@@ -45,24 +54,38 @@ function iniciarJuego(modo) {
     if (modo === '2jugadores') {
         const nombreJugadorX = prompt("Ingrese el nombre del jugador X:");
         const nombreJugadorO = prompt("Ingrese el nombre del jugador O:");
-        JugadorO = nombreJugadorO || "Jugador O";
-        JugadorX = nombreJugadorX || "Jugador X";
+        JugadorO = nombreJugadorO;
+        JugadorX = nombreJugadorX;
 
-        document.getElementById('nombre-x').textContent = JugadorX;
-        document.getElementById('nombre-o').textContent = JugadorO;
+        if (!nombreJugadorX || !nombreJugadorO) {
+            alert("Debes ingresar los nombres de ambos jugadores para continuar.");
+            document.getElementById('overlay').style.display = 'flex';
+            return;
+        }
+
+        document.getElementById('nombre-x').textContent = `${nombreJugadorX}`;
+        document.getElementById('nombre-o').textContent = `${nombreJugadorO}`;
     } else {
         const nombreJugadorX = prompt("Ingrese el nombre del jugador X:");
-        JugadorX = nombreJugadorX || "Jugador X";
+        JugadorX = nombreJugadorX;
         JugadorO = "Bot";
-
-        document.getElementById('nombre-x').textContent = JugadorX;
+        if (!nombreJugadorX) {
+            alert("Debes ingresar el nombre del Jugador X");
+            document.getElementById('overlay').style.display = 'flex';
+            return;
+        }
+        document.getElementById('nombre-x').textContent = `${nombreJugadorX}`;
         document.getElementById('nombre-o').textContent = "Bot";
     }
+
     document.getElementById('overlay').style.display = 'none';
-    ajustarDimensionesTablero(); // Ajustar dimensiones antes de crear el tablero
+
+    // Inicializar el estado del tablero antes de crear
+    inicializarEstadoTablero();
     crearTablero();
     actualizarIndicadorTurno();
 }
+
 
 // Función para actualizar el indicador de turno
 function actualizarIndicadorTurno() {
@@ -72,9 +95,10 @@ function actualizarIndicadorTurno() {
     }
 }
 
-// Función para crear el tablero
 function crearTablero() {
 
+    estadoTablero = Array.from({ length: filas }, () => Array(columnas).fill(null));
+    
     let tamañoCelda;
     if (window.innerWidth < 1024) {
         tamañoCelda = 30; // Tamaño para pantallas pequeñas
@@ -94,22 +118,111 @@ function crearTablero() {
             celda.classList.add('celda');
             celda.dataset.fila = i;
             celda.dataset.columna = j;
+
+            // Restaurar el estado del tablero
+            if (estadoTablero[i][j] === 'x') {
+                celda.classList.add('x');
+                celda.textContent = 'X';
+            } else if (estadoTablero[i][j] === 'o') {
+                celda.classList.add('o');
+                celda.textContent = 'O';
+            }
+
             celda.addEventListener('click', () => manejarClick(celda));
             tablero.appendChild(celda);
         }
     }
 
     mostrarBotonReiniciar();
-    actualizarIndicadorTurno(); // Actualizar turno después de crear
+    actualizarIndicadorTurno();
 }
+
+
+// Función para crear el tablero
+// function crearTablero() {
+
+//     let tamañoCelda;
+//     if (window.innerWidth < 1024) {
+//         tamañoCelda = 30; // Tamaño para pantallas pequeñas
+//     } else if (window.innerWidth < 1100) {
+//         tamañoCelda = 40; // Tamaño para pantallas medianas
+//     } else {
+//         tamañoCelda = 40; // Tamaño para pantallas grandes
+//     }
+
+//     tablero.style.gridTemplateColumns = `repeat(${columnas}, ${tamañoCelda}px)`;
+//     tablero.style.gridTemplateRows = `repeat(${filas}, ${tamañoCelda}px)`;
+//     tablero.innerHTML = ''; // Limpiar tablero antes de crear
+
+//     for (let i = 0; i < filas; i++) {
+//         for (let j = 0; j < columnas; j++) {
+//             const celda = document.createElement('div');
+//             celda.classList.add('celda');
+//             celda.dataset.fila = i;
+//             celda.dataset.columna = j;
+//             celda.addEventListener('click', () => manejarClick(celda));
+//             tablero.appendChild(celda);
+//         }
+//     }
+
+//     mostrarBotonReiniciar();
+//     actualizarIndicadorTurno(); // Actualizar turno después de crear
+// }
+
+// function manejarClick(celda) {
+//     if (juegoTerminado || celda.classList.contains('x') || celda.classList.contains('o') || (modoJuego === 'bot' && turno === 'o')) {
+//         return;
+//     }
+
+//     celda.classList.add(turno);
+//     celda.textContent = turno.toUpperCase();
+
+//     if (comprobarVictoria()) {
+//         dibujarLineaGanadora();
+
+//         const overlayVictoria = document.getElementById("overlay-victoria");
+//         const textoVictoria = document.getElementById("texto-victoria");
+
+//         if (turno === 'x') {
+//             textoVictoria.textContent = `¡Felicidades ${JugadorX} (X), has ganado!`;
+//             victoriasX++;
+//             derrotasO++;
+//         } else {
+//             textoVictoria.textContent = `¡Felicidades ${JugadorO} (O), has ganado!`;
+//             victoriasO++;
+//             derrotasX++;
+//         }
+
+//         actualizarMarcadores();
+//         juegoTerminado = true;
+
+//         overlayVictoria.style.display = "flex";
+//         return;
+//     }
+
+//     turno = turno === 'x' ? 'o' : 'x';
+//     actualizarIndicadorTurno();
+
+//     if (modoJuego === 'bot' && turno === 'o' && !juegoTerminado) {
+//         setTimeout(movimientoBot, 500);
+//     }
+// }
+
+
 
 function manejarClick(celda) {
     if (juegoTerminado || celda.classList.contains('x') || celda.classList.contains('o') || (modoJuego === 'bot' && turno === 'o')) {
         return;
     }
 
+    const fila = parseInt(celda.dataset.fila);
+    const columna = parseInt(celda.dataset.columna);
+
     celda.classList.add(turno);
     celda.textContent = turno.toUpperCase();
+
+    // Actualizar el estado del tablero
+    estadoTablero[fila][columna] = turno;
 
     if (comprobarVictoria()) {
         dibujarLineaGanadora();
@@ -141,6 +254,7 @@ function manejarClick(celda) {
         setTimeout(movimientoBot, 500);
     }
 }
+
 
 // Funciones auxiliares
 function actualizarMarcadores() {
@@ -740,5 +854,3 @@ window.addEventListener("resize", () => {
 
 // Inicializar el tablero
 ajustarDimensionesTablero();
-
-crearTablero();
