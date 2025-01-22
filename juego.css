@@ -4,6 +4,7 @@ body {
   margin: 0;
   padding: 0;
   background-color: #fffeb1;
+  overflow-x: scroll;
 }
 
 h1 {
@@ -18,8 +19,8 @@ h1 {
 }
 
 .celda {
-  width: 50px;
-  height: 50px;
+  width: 40px;
+  height: 40px;
   background-color: white;
   border: 3px solid #7f7f7f;
   display: flex;
@@ -217,7 +218,7 @@ button:hover {
 
 
 /* Diseño para dispositivos con un ancho máximo de 768px (tablets y móviles) */
-@media (max-width: 768px) {
+@media (max-width: 767px) {
   #tablero-juego {
     gap: 1px;
   }
@@ -225,7 +226,7 @@ button:hover {
   .celda {
     width: 40px;
     height: 40px;
-    font-size: 20px;
+    font-size: 30px;
   }
 
   #marcadores {
@@ -270,9 +271,9 @@ button:hover {
   }
 
   .celda {
-    width: 30px;
-    height: 30px;
-    font-size: 16px;
+    width: 40px;
+    height: 40px;
+    font-size: 30px;
   }
 
   #jugador-x, #jugador-o {
@@ -306,15 +307,15 @@ button:hover {
 }
 
 /* Pantallas entre 769px y 1023px (Tablets) */
-@media (min-width: 769px) and (max-width: 1023px) {
+@media (min-width: 768px) and (max-width: 1023px) {
   #tablero-juego {
     gap: 1px;
   }
 
   .celda {
-    width: 30px;
-    height: 30px;
-    font-size: 20px;
+    width: 40px;
+    height: 40px;
+    font-size: 30px;
   }
 
   h1 {
@@ -337,7 +338,7 @@ button:hover {
 }
 
 /* Pantallas entre 1024px y 1300px */
-@media (min-width: 1024px) and (max-width: 1300px) {
+@media (min-width: 1024px) and (max-width: 1200px) {
   #tablero-juego {
     gap: 2px;
   }
@@ -346,6 +347,37 @@ button:hover {
     width: 40px;
     height: 40px;
     font-size: 25px;
+  }
+
+  h1 {
+    font-size: 28px;
+  }
+
+  button {
+    padding: 12px 25px;
+    font-size: 15px;
+  }
+
+  #marcadores {
+    gap: 40px;
+  }
+
+  #jugador-x,
+  #jugador-o {
+    font-size: 17px;
+  }
+}
+
+/* Pantallas entre 1024px y 1300px */
+@media (min-width: 1201px) and (max-width: 1400px) {
+  #tablero-juego {
+    gap: 2px;
+  }
+
+  .celda {
+    width: 40px;
+    height: 40px;
+    font-size: 30px;
   }
 
   h1 {
